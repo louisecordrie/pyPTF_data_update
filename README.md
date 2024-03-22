@@ -12,7 +12,7 @@ pyPTF_data_update is derived from the PTF and is written in Python with various 
 
 Details on this workflow can be found in the following article:
 
-## pyPTF_data_update Code
+## Installation
 
 This repository contains all the source codes used to run pyPTF_data_update in a local environment. Follow the instructions in the RUN section to use the workflow.
 
@@ -22,9 +22,11 @@ The entire workflow can be run using the script `run_py.sh`, and the setup of th
 
 ## Preparation of the Environment
 
-Download the entire git repository. A dataset should be uploaded from Zenodo and uncompressed. Replace line 36 in the `cfg/ptf_main.config` file with your `pyPTF_hazard_curves` dictionary path.
+Download the entire git repository. 
 
-## Configuration of the Run
+A dataset should be uploaded from Zenodo and uncompressed. 
+
+Replace line 36 in the `cfg/ptf_main.config` file with your `pyPTF_hazard_curves` dictionary path.
 
 Two files must be modified before the run:
 
@@ -32,11 +34,54 @@ Two files must be modified before the run:
 - `run_py.sh`
 
 ### ptf_main.config
-Modify the [Sampling] section (line 129) and the [EventID] section (line 152) as described in the file.
+
+The section `[Sampling]` (line 129) should be modified:
+
+- The original scenario's ensemble can be used to produce the hazard curves with `OR_EM=1` (EM=ensemble) and `OR_HC=1` (HC=hazard curves): these options will produce two outputs ptf_out.hdf5 and hazard_curves_original.hdf5
+
+- The resampling mode (`MC_type`, `MC_samp_scen`, `MC_samp_run`) is the one that should be used for the updating procedure:
+  
+  `MC_type=LH` (or MC) corresponds to the sampling method LatinHypercude or MonteCarlo
+  
+  `MC_samp_scen=500` corresponds to the number of scenarios in the ensemble
+  
+  `MC_samp_run=1` corresponds to the number of ensembles, it should not be modified (exists for development purposes)
+
+- The RS options should be left to 0 (in development)
+  
+- The different updates can be activated with:
+  
+  `Kagan_weights=1` (1: activated, 0: not) for the focal mechanism update
+  
+  `Mare_weights=1` (1: activated, 0: not) for the tsunami data update
+  
+  `NbrFM=2` allows to select the number of focal-mechanism to be used in the update
+  
+- The rest of the options should not be modified
+  
+
+The section `[EventID]` (line 152) should be modified:
+
+- The name of the event eventID can be modified using the exact same names as indicated in eventID_list (line 156)
+
+  `eventID=2018_1025_zante`
 
 ### run_py.sh
-Modify the eventID (line 15) to match the one in `ptf_main.config`. Optionally, modify the Python version.
 
-### Run
+Modify the eventID (line 15) to match the one in `ptf_main.config`. 
+
+Optionally, modify the Python version (line 69 and line 100)
+
+## Run
+
 Execute the following command:
 $ bash run_py.sh
+
+## Post-Processing
+
+
+
+## Test-Case
+
+
+
