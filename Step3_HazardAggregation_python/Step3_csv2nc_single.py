@@ -1,0 +1,155 @@
+"""
+=================================
+KOS_BODRUM_MULTI_HAZARD_CSV2NC.PY
+=================================
+
+THIS SCRIPT TRANSLATES THE INPUT CSV WITH KOS-BODRUM DATA INTO A
+NETCDF FILE WHICH IS COMPLIANT WITH CF-1.8 CONVENTIONS.
+
+DATA IN THE CSV IS ORDERED BY:
+    1, 2) LON, LAT: LONGITUDE AND LATITUDE COORDINATES OF POIs (WGS84);
+    3) PROB: THE UNCONDITIONAL EXCEEDANCE PROBABILITY THRESHOLD OF THE HAZARD CURVES FOR
+             AN EXPOSURE TIME OF 5 YEARS;
+
+FOR EACH TRIPLE (LON, LAT, PROB) THE CSV CONTAINS THE CORRESPONDING:
+    4) WATER HIGHT (WH) VALUE.
+
+WH VALUES IN THE CSV ARE IN METERS AND NEED TO BE DIVIDED BY 1000.
+
+-999 VALUES REPRESENT MISSING VALUES.
+"""
+
+import csv
+import os
+import sys
+import numpy as np
+import pandas as pd
+import netCDF4 as nc4
+import time
+
+
+def csv2nc(PATH, EVENT_ID):
+	#print('PATH:   ', PATH)
+	print('Converting csv to nc')
+	# INPUT CSV FILE NAME
+	FILE_DATA_CSV = 'Step3_HazardCurves_single.csv'
+	# INPUT CSV FILE COLUMNS
+	INPUT_CSV_COLS = ['lon', 'lat', 'wh', 'prob']
+
+	# OUTPUT NETCDF FILE NAME
+	NETCDF_FILE = 'Step3_HazardCurves_single.nc'
+
+	# =====================
+	# READ KOS-BODRUM CSV DATA
+	# =====================
+
+	# DATA FRAME WITH CSV DATA
+	df = pd.read_csv(PATH+'/'+FILE_DATA_CSV, comment='#', usecols=INPUT_CSV_COLS)
+
+	# LIST WITH UNIQUE PAIRS (LONGITUDE, LATITUDE), i.e. THE POIs
+	lonlat = df.loc[:,['lon','lat']].drop_duplicates().values
+
+	# SEPARATE LISTS WITH LONGITUDES AND LATITUDES
+	lon = lonlat[:,0]
+	lat = lonlat[:,1]
+
+	# LIST WITH UNIQUE WH THRESHOLDS
+	wh = df.loc[:,['wh']].drop_duplicates().values
+	wh = wh[:,0]
+
+	# LIST WITH EXCEEDANCE PROBABILITIES
+	prob = df.loc[:,['prob']].values
+	prob = prob[:,0]
+	prob.shape = (len(lonlat), len(wh))
+
+	# =========================
+	# CREATE THE NETCDF DATASET
+	# =========================
+
+	ds = nc4.Dataset(PATH+'/'+NETCDF_FILE, 'w', format='NETCDF4')
+
+	# DEFINE NETCDF DIMENSIONS
+	ds.createDimension('wave_height_1m_intensity_measure', len(wh))
+	ds.createDimension('target_point', len(lonlat))
+	ds.createDimension('time', None)
+
+	# DEFINE AND POPULATE NETCDF VARIABLES WITH CSV DATA
+	target_point = ds.createVariable('target_point', 'i4', 'target_point')
+	longitude = ds.createVariable('lon', 'f4', 'target_point')
+	latitude = ds.createVariable('lat', 'f4', 'target_point')
+	wavehight = ds.createVariable('wave_height_1m', 'f4', 'wave_height_1m_intensity_measure')
+	probability = ds.createVariable('exceedance_probability_50yr', 'f4',  ('target_point', 'wave_height_1m_intensity_measure'))
+
+	target_point[:] = np.array([i for i in range(len(lonlat))])
+	longitude[:] = lon
+	latitude[:] = lat
+	wavehight[:] = wh
+	probability[:,:] = prob
+
+	# =====================
+	# SET NETCDF ATTRIBUTES
+	# =====================
+
+	# GLOBAL ATTRIBUTES
+	ds.title = "Probabilistic Tsunami Forecast related to the Earthquake of " + EVENT_ID
+	ds.institution = "Istituto Nazionale di Geofisica e Vulcanologia (INGV)"
+	ds.references = "http://www.ingv.it"
+	ds.history = "TO BE DEFINED"
+	ds.authors = "TO BE DEFINED"
+	ds.contact_person = "Enrico Baglione <enrico.baglione@ingv.it>; Jacopo Selva <jacopo.selva@ingv.it>"
+	ds.Conventions = "CF-1.8"
+
+	# VARIABLE ATTRIBUTES
+	target_point.long_name = "Point of Interest (PoI)"
+	target_point.standard_name = "target_point"
+	target_point.axis = "T"
+
+	longitude.long_name = "Longitude coordinate of the PoI (WGS84)"
+	longitude.standard_name = "longitude"
+	longitude.units = "degrees_east"
+
+	latitude.long_name = "Latitude coordinate of the PoI (WGS84)"
+	latitude.standard_name = "latitude"
+	latitude.units = "degrees_north"
+
+	probability.long_name = "Unconditional probability of exceedence for an exposure time of 50 years"
+	probability.standard_name = "exceedance_probability_50yr"
+	probability.axis = "Y"
+
+	wavehight.long_name = "Near-coast wave height at 1m depth"
+	wavehight.standard_name = "wave_height_1m"
+	wavehight.units = "meter"
+	wavehight.axis = "X"
+
+	# CLOSE DATASET
+	ds.close()
+
+
+if __name__ == '__main__':
+	start_time = time.time()
+	#program_path = os.getcwd()+'/'
+	#code_path = program_path
+	#risale di una directory e ridefinisce il percorso 
+	#os.chdir('..')
+	#program_path = os.getcwd()+'/'
+	#print('directory di lavoro: ', program_path)
+	# IF THE NUMBER OF ARGUMENTS IS CORRECT
+	if len(sys.argv) == 3:
+		# GET FIRST ARGUMENT WITH INPUT CSV NAME
+		INPUT_PATH =  sys.argv[1]
+		# GET SECOND ARGUMENT WITH OUTPUT CSV NAME
+		EVENT_NAME = sys.argv[2]
+		# START CONVERSION
+		csv2nc(INPUT_PATH, EVENT_NAME)
+		end_time = time.time()
+		print('il codice ha impiegato ', end_time-start_time, 'seconds')
+		# EXIT WITH SUCCESS CODE
+		sys.exit(0)
+	else:
+		# PRINT SCRIPT DESCRIPTION
+		print(__file__.upper(), "-- converts input CSV with HAZARD CURVES results into the CSV INPUT NetCDF format.")
+		# PRINT USAGE
+		print("Usage:", __file__, "[INPUT_PATH]" "[EVENT_ID]")
+		# EXIT WITH ERROR CODE
+		sys.exit(1)
+

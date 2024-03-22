@@ -1,0 +1,38 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "geometry": {
+                "type": "Point",
+                "coordinates": [23.72, 35.25, 15]
+            },
+            "type": "Features",
+            "properties": {
+                "originId": 99999999,
+                "version": 100,
+                "time": "2020-05-02T12:49",
+                "eventId": 99999999,
+                "mag": 8.0,
+                "geojson_creationTime": "",
+                "magAuthor": "early-est_ee1.1.9#ee",
+                "magType": "Mwp",
+                "type": "earthquake",
+                "place": "crete",
+                "mag_percentiles": {
+                    "p16": "7.9",
+                    "p50": "8.0",
+                    "p84": "8.1"
+                },
+                "cov_matrix" : {
+                     "XX" : "10.0", 
+                     "XY" : "0.5", 
+                     "XZ" : "0.1", 
+                     "YY" : "10.0", 
+                     "YZ" : "0.5",  
+                     "ZZ" : "10.0"
+                },
+                "author": "early-est_ee1.1.9#ee"
+            }
+        }
+    ]
+}
