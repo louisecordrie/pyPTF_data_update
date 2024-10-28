@@ -11,8 +11,8 @@
 #
 #############################
 
-eventID_list=[2003_0521_boumardes,2015_0416_crete,2015_1117_lefkada,2016_0125_gibraltar,2016_1030_norcia,2017_0612_lesbo,2017_0720_kos-bodrum,2018_1025_zante,2019_0320_turkey,2019_0921_albania,2020_0502_crete,2020_1030_samos,crete_synthetic_event,neamwave_synthetic_event,samos_synth_event,2023_0909_morocco]
-eventID=2023_0206_turkey
+eventID_list=[2003_0521_boumardes,2017_0720_kos-bodrum,2018_1025_zante,2020_1030_samos,samos_synth_event]
+eventID=2017_0720_kos-bodrum
 domain=med-tsumaps
 tsu_sim=precomputed 
 
@@ -70,7 +70,7 @@ if $step1YN; then
   mv ptf_localOutput/* $workdir/step1_output/
   mv $workdir/step1_output/ptf_out*.hdf5 $mainFolder/Step3_HazardAggregation_python/ptf_localOutput/
 else
-   echo 'Not exectuted'  
+   echo 'Not executed'  
 fi
 
 #########
@@ -82,6 +82,7 @@ echo '============================'
 echo '========== STEP 2 =========='
 echo '============================'
 if $step2YN; then
+   echo 'Not executed'
    # for simulations on-the-fly
 fi
 
@@ -97,9 +98,9 @@ echo '============================'
 if $step3YN; then
   cd $mainFolder/Step3_HazardAggregation_python
   echo '-------STEP 3-------'
-  /home/louise.cordrie/MINICONDA/miniconda3/envs/env-miniconda/bin/python3.8 ./run_step3.py --cfg ../cfg/ptf_main.config --event ../IO/earlyEst/$eventID\_stat.json 
+  python ./run_step3.py --cfg ../cfg/ptf_main.config --event ../IO/earlyEst/$eventID\_stat.json 
   mv $mainFolder/Step3_HazardAggregation_python/ptf_localOutput/* $workdir/step3_output/
   
 else
-   echo 'Not exectuted'  
+   echo 'Not executed'  
 fi

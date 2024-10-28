@@ -1,0 +1,23 @@
+{
+"type": "FeatureCollection",
+"features": [{
+      "geometry": {
+          "type": "Point",
+          "coordinates": [37.17, 37.19, 35.0]},
+      "type": "Feature",
+      "properties": {
+          "originId": 20230206615431,
+          "version": 100,
+          "time": "2018-10-25T22:54:18.404000",
+          "eventId": 2023020622274001,
+          "mag": 7.90,
+          "geojson_creationTime": "2023-02-06T08:30:00",
+          "magAuthor": "early-est_ee1.1.9#ee",
+          "magType": "Mwp",
+          "type": "earthquake",
+          "place": "Turkey",
+          "mag_percentiles" : {"p16" : "7.7", "p50": "7.9", "p84" : "8.1"},
+          "cov_matrix" : {"XX" : "1.70816", "XY" : "0.270061", "XZ" : "0.0988157", "YY" : "2.74951", "YZ" : "0.48637", "ZZ" : "8.04068"},
+          "author": "early-est_ee1.1.9#ee"}
+          }]
+}

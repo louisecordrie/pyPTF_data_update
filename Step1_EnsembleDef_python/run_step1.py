@@ -93,7 +93,7 @@ def step1_ensembleEval(**kwargs):
 
     ### Loading and selection of the focal mechanism ###
     h5file = FM_path
-    h5file = '/scratch/cordrie/ptf_clean/IO/med-tsumaps-python/tsunami_data_all.hdf5'
+    h5file = '../IO/med-tsumaps-python/tsunami_data_all.hdf5'
     FM_file=hkl.load(h5file)
     totfm = len(FM_file[EventID])
     if NbrFM==0 or NbrFM>=totfm:
@@ -105,7 +105,7 @@ def step1_ensembleEval(**kwargs):
 
     ### Loading of the tsunami data ###
     h5file = TSU_path
-    h5file = '/scratch/cordrie/ptf_clean/IO/med-tsumaps-python/tsunami_data_all.hdf5'
+    h5file = '../IO/med-tsumaps-python/tsunami_data_all.hdf5'
     TSU_file=hkl.load(h5file)
     tsu_data=TSU_file[EventID]
     Ntsu=len(tsu_data)
