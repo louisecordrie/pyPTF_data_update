@@ -24,7 +24,7 @@ The entire workflow can be run using the script `run_py.sh`, and the setup of th
 
 Download the entire git repository. 
 
-A dataset should be uploaded from Zenodo and uncompressed. 
+A dataset  `pyPTF_hazard_curves`  should be uploaded from Zenodo : https://zenodo.org/badge/DOI/10.5281/zenodo.10852563.svg
 
 Replace line 36 in the `cfg/ptf_main.config` file with your `pyPTF_hazard_curves` dictionary path.
 
